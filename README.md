@@ -29,10 +29,15 @@ RubyData converts tables in a SQLite3 database into instances of the
 
 Available methods
 ---------------------
-* `#find`
 * `#all`
+* `#first`
+* `#last`
+* `#update(params)`
+* `#create(params)`
+* `#delete`
 * `#save`
-* `#where`
+* `#find(id)`
+* `#where(params)`
 
 Available associations:
 ----------------------------------------
