@@ -150,8 +150,9 @@ class SQLObject
     SQL
   end
 
-  def create
-
+  def self.create(params = {})
+    new_obj = self.new(params)
+    new_obj.save
   end
 
   def save
