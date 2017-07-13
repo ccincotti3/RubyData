@@ -1,7 +1,11 @@
 require_relative 'db_connection'
 require 'active_support/inflector'
+require_relative 'associatable'
+require_relative 'searchable'
 
 class SQLObject
+  extend Associatable
+  extend Searchable
   def self.columns
     if @columns.nil?
       columns = DBConnection.execute2(<<-SQL)
@@ -65,6 +69,14 @@ class SQLObject
     objs
   end
 
+  def self.first
+    self.all[0]
+  end
+
+  def self.last
+    self.all[-1]
+  end
+
   def self.find(id)
     results = DBConnection.execute(<<-SQL, id)
       SELECT
@@ -114,15 +126,20 @@ class SQLObject
         #{self.class.table_name} (#{col_names})
       VALUES
         (#{question_marks})
-      SQL
+    SQL
     self.id = DBConnection.last_insert_row_id
   end
 
-  def update
-    cols = self.class.columns
+  def update(params = {})
+    if params.empty?
+      cols = self.class.columns
+      vals = attribute_values
+    else
+      cols = params.keys
+      vals = params.values
+    end
     col_names = cols.map {|col| "#{col} = ?"}.join(",")
     id = self.id
-    vals = attribute_values
     DBConnection.execute(<<-SQL,*vals, id)
       UPDATE
         #{self.class.table_name}
@@ -130,7 +147,11 @@ class SQLObject
         #{col_names}
       WHERE
         id = ?
-      SQL
+    SQL
+  end
+
+  def create
+
   end
 
   def save

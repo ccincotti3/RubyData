@@ -23,7 +23,3 @@ module Searchable
       parse_all(result)
   end
 end
-
-class SQLObject
-  extend Searchable
-end
